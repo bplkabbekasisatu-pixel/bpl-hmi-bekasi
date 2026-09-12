@@ -4,16 +4,22 @@
  * KONFIGURASI DATABASE
  * ============================================================
  * Ganti KEEMPAT nilai di bawah ini sesuai database MySQL yang
- * Anda buat di cPanel (menu "MySQL Databases").
+ * Anda buat di cPanel/VistaPanel (menu "MySQL Databases").
  *
  * Nama database & username di cPanel biasanya berawalan nama
  * akun hosting Anda, contoh: "namauser_bplhmi".
+ *
+ * File ini hanya CONTOH (aman untuk di-commit ke git). Salin jadi
+ * "config.php" lalu isi nilai sungguhannya di sana — "config.php"
+ * sudah dikecualikan lewat .gitignore supaya kredensial asli tidak
+ * pernah ikut ter-commit.
  * ============================================================
  */
 define('DB_HOST', 'GANTI_HOST_DATABASE');
 define('DB_NAME', 'GANTI_NAMA_DATABASE');
 define('DB_USER', 'GANTI_USERNAME_DATABASE');
 define('DB_PASS', 'GANTI_PASSWORD_DATABASE');
+
 /**
  * Folder tempat menyimpan foto yang diunggah pengurus (logo,
  * foto pengurus/instruktur, foto sampul kegiatan/berita).
