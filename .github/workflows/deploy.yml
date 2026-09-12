@@ -1,0 +1,31 @@
+name: Deploy ke InfinityFree
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ftp-deploy:
+    name: Deploy lewat FTP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kode
+        uses: actions/checkout@v4
+
+      - name: Upload ke InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          # api/config.php & uploads/ tidak pernah ada di repo (lihat .gitignore),
+          # jadi tidak akan pernah tertimpa oleh deploy ini.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            database/**
+            README.md
+            DEPLOY-GITHUB-INFINITYFREE.md
