@@ -232,6 +232,8 @@
   .status-terlaksana{background:var(--primary);color:#fff;}
   .status-rencana{background:var(--accent-soft);color:var(--accent-strong);}
   .status-tunggu{background:var(--surface-2);color:var(--muted);}
+  .bidang-bpl{background:var(--accent-soft);color:var(--accent-strong);}
+  .bidang-pa{background:var(--primary-soft);color:var(--primary);}
   .table-foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
   .col-narrow{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .col-narrow-wide{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -480,7 +482,7 @@
       <div class="section-top-row">
         <div class="section-head">
           <h2>Jadwal Kegiatan</h2>
-          <p>Gabungan Program Kerja BPL dan Program Kerja Bidang PA, disusun berdasarkan waktu pelaksanaan terdekat. Tanggal dapat berubah, ikuti pengumuman resmi.</p>
+          <p>Gabungan Program Kerja BPL dan Program Kerja Bidang PA (ditandai bidangnya masing-masing), disusun berdasarkan waktu pelaksanaan terdekat. Tanggal dapat berubah, ikuti pengumuman resmi.</p>
         </div>
       </div>
 
@@ -489,7 +491,7 @@
           <div class="table-card">
             <table>
               <thead>
-                <tr><th>Program</th><th>Jenjang</th><th>Waktu</th><th>Penyelenggara</th><th>Status</th><th id="jadwal-head-action"></th></tr>
+                <tr><th>Program</th><th>Bidang</th><th>Jenjang</th><th>Waktu</th><th>Penyelenggara</th><th>Status</th><th id="jadwal-head-action"></th></tr>
               </thead>
               <tbody id="jadwal-body"></tbody>
             </table>
@@ -587,7 +589,7 @@
 
       <div class="section-head">
         <h2>Program Kerja Bidang PA</h2>
-        <p>Program kerja Bidang PA mengikuti Jadwal Kegiatan BPL — mengedit di salah satu tempat otomatis memperbarui keduanya.</p>
+        <p>Program kerja Bidang Pembinaan Anggota (PA), dikelola terpisah dari Program Kerja BPL.</p>
       </div>
       <div class="table-card">
         <table>
@@ -711,7 +713,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2>Program Kerja BPL</h2>
-        <p>Program kerja BPL mengikuti Jadwal Kegiatan di laman Beranda — mengedit di salah satu tempat otomatis memperbarui semuanya.</p>
+        <p>Program kerja Badan Pengelola Latihan (BPL), dikelola terpisah dari Program Kerja Bidang PA.</p>
       </div>
       <div class="table-card">
         <table>
@@ -859,6 +861,7 @@
   ];
   var STATUS_LABEL = {rencana:'Direncanakan', jalan:'Berjalan', terlaksana:'Terlaksana', tunggu:'Menunggu'};
   var STATUS_CLASS = {rencana:'status-rencana', jalan:'status-jalan', terlaksana:'status-terlaksana', tunggu:'status-tunggu'};
+  var KATEGORI_LABEL = {bpl:'BPL', pa:'PA'};
 
   var DEFAULT_LOGO_SVG = '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">' +
     '<circle cx="24" cy="24" r="21.5" fill="var(--primary)"/>' +
@@ -1322,23 +1325,30 @@
     });
   }
 
-  /* ---------- Jadwal (mirror ke 3 tempat, urut dari server) ---------- */
+  /* ---------- Jadwal (Program Kerja BPL & Program Kerja Bidang PA, dibedakan lewat kategori) ---------- */
   var jadwalArr = [];
   function renderJadwal(){
     apiGet('jadwal').then(function(res){
       jadwalArr = res.data || [];
-      renderJadwalInto('jadwal-body', 'jadwal-add-wrap');
-      renderJadwalInto('jadwal-body-pa', 'jadwal-add-wrap-pa');
-      renderJadwalInto('jadwal-body-bpl', 'jadwal-add-wrap-bpl');
+      renderJadwalInto('jadwal-body', 'jadwal-add-wrap', null, 'bpl');
+      renderJadwalInto('jadwal-body-pa', 'jadwal-add-wrap-pa', 'pa', 'pa');
+      renderJadwalInto('jadwal-body-bpl', 'jadwal-add-wrap-bpl', 'bpl', 'bpl');
     });
   }
-  function renderJadwalInto(bodyId, addWrapId){
+  var JADWAL_ADD_LABEL = {
+    'jadwal-add-wrap': '+ Tambah jadwal',
+    'jadwal-add-wrap-pa': '+ Tambah Program Kerja PA',
+    'jadwal-add-wrap-bpl': '+ Tambah Program Kerja BPL'
+  };
+  function renderJadwalInto(bodyId, addWrapId, filterKategori, defaultKategori){
     var body = document.getElementById(bodyId);
     if(!body) return;
-    var arr = jadwalArr;
+    var arr = filterKategori ? jadwalArr.filter(function(r){ return r.kategori === filterKategori; }) : jadwalArr;
+    var colspan = filterKategori ? 6 : 7;
     body.innerHTML = arr.length ? arr.map(function(r,i){
       return '<tr>' +
         '<td>'+escapeHtml(r.program)+'</td>' +
+        (filterKategori ? '' : '<td><span class="status-chip bidang-'+(r.kategori==='pa'?'pa':'bpl')+'">'+(KATEGORI_LABEL[r.kategori]||r.kategori)+'</span></td>') +
         '<td>'+escapeHtml(r.jenjang)+'</td>' +
         '<td>'+escapeHtml(r.waktu)+'</td>' +
         '<td>'+escapeHtml(r.penyelenggara)+'</td>' +
@@ -1348,24 +1358,28 @@
           '<button class="edit-fab sm" data-del-jadwal="'+i+'">🗑</button>' +
         '</td>' : '') +
       '</tr>';
-    }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:28px;">Belum ada jadwal.</td></tr>';
-    bindListButtonsApi(body, 'jadwal', arr, 'jadwal', renderJadwal, showJadwalForm);
+    }).join('') : '<tr><td colspan="'+colspan+'" style="text-align:center;color:var(--muted);padding:28px;">Belum ada jadwal.</td></tr>';
+    bindListButtonsApi(body, 'jadwal', arr, 'jadwal', renderJadwal, function(item){ showJadwalForm(item, defaultKategori); });
     var addWrap = document.getElementById(addWrapId);
     if(addWrap){
-      addWrap.innerHTML = adminMode ? '<button class="btn btn-ghost btn-sm" id="btn-add-'+addWrapId+'" type="button">+ Tambah jadwal</button>' : '';
+      addWrap.innerHTML = adminMode ? '<button class="btn btn-ghost btn-sm" id="btn-add-'+addWrapId+'" type="button">'+(JADWAL_ADD_LABEL[addWrapId]||'+ Tambah jadwal')+'</button>' : '';
       var addBtn = document.getElementById('btn-add-'+addWrapId);
-      if(addBtn) addBtn.addEventListener('click', function(){ showJadwalForm(null); });
+      if(addBtn) addBtn.addEventListener('click', function(){ showJadwalForm(null, defaultKategori); });
     }
   }
-  function showJadwalForm(item){
+  function showJadwalForm(item, defaultKategori){
     var editing = !!item;
-    var d = item || {program:'',jenjang:'',waktu:'',penyelenggara:'',status:'rencana',tanggal_urut:''};
+    var d = item || {program:'',kategori:defaultKategori||'bpl',jenjang:'',waktu:'',penyelenggara:'',status:'rencana',tanggal_urut:''};
     openModal(editing ? 'Ubah jadwal' : 'Tambah jadwal',
       '<div class="field"><label for="j-program">Program</label><input id="j-program" type="text" value="'+escapeHtml(d.program)+'"></div>' +
+      '<div class="field"><label for="j-kategori">Bidang</label><select id="j-kategori">' +
+        '<option value="bpl"'+(d.kategori==='bpl'?' selected':'')+'>Program Kerja BPL</option>' +
+        '<option value="pa"'+(d.kategori==='pa'?' selected':'')+'>Program Kerja Bidang PA</option>' +
+      '</select></div>' +
       '<div class="field"><label for="j-jenjang">Jenjang</label><input id="j-jenjang" type="text" value="'+escapeHtml(d.jenjang)+'"></div>' +
       '<div class="field"><label for="j-waktu">Waktu (teks tampilan, cth: November 2026)</label><input id="j-waktu" type="text" value="'+escapeHtml(d.waktu)+'"></div>' +
       '<div class="field"><label for="j-tanggal-urut">Tanggal pelaksanaan (untuk pengurutan otomatis)</label><input id="j-tanggal-urut" type="date" value="'+escapeHtml(d.tanggal_urut||'')+'"></div>' +
-      '<p style="font-size:.76rem;color:var(--muted);margin:-8px 0 14px;">Jadwal Kegiatan, Program Kerja Bidang PA, dan Program Kerja BPL otomatis diurutkan dari tanggal ini yang paling dekat. Kosongkan jika belum ada tanggal pasti.</p>' +
+      '<p style="font-size:.76rem;color:var(--muted);margin:-8px 0 14px;">Jadwal Kegiatan di laman Beranda menampilkan gabungan Program Kerja BPL dan PA, otomatis diurutkan dari tanggal ini yang paling dekat. Kosongkan jika belum ada tanggal pasti.</p>' +
       '<div class="field"><label for="j-peny">Penyelenggara</label><input id="j-peny" type="text" value="'+escapeHtml(d.penyelenggara)+'"></div>' +
       '<div class="field"><label for="j-status">Status</label><select id="j-status">' +
         '<option value="rencana"'+(d.status==='rencana'?' selected':'')+'>Direncanakan</option>' +
@@ -1380,6 +1394,7 @@
     document.getElementById('f-save').addEventListener('click', function(){
       var body = {
         program: document.getElementById('j-program').value.trim(),
+        kategori: document.getElementById('j-kategori').value,
         jenjang: document.getElementById('j-jenjang').value.trim(),
         waktu: document.getElementById('j-waktu').value.trim(),
         tanggal_urut: document.getElementById('j-tanggal-urut').value,

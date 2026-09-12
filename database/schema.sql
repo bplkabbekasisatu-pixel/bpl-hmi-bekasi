@@ -93,10 +93,11 @@ CREATE TABLE IF NOT EXISTS instruktur (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ---------- 6. JADWAL (Jadwal Kegiatan / Program Kerja BPL & PA - satu sumber) ----------
+-- ---------- 6. JADWAL (Program Kerja BPL & Program Kerja Bidang PA, dibedakan lewat kolom kategori) ----------
 CREATE TABLE IF NOT EXISTS jadwal (
   id INT AUTO_INCREMENT PRIMARY KEY,
   program VARCHAR(255) NOT NULL,
+  kategori ENUM('bpl','pa') NOT NULL DEFAULT 'bpl' COMMENT 'bpl = Program Kerja BPL, pa = Program Kerja Bidang PA',
   jenjang VARCHAR(100) NULL,
   waktu VARCHAR(150) NULL,
   tanggal_urut DATE NULL COMMENT 'dipakai untuk mengurutkan, tidak wajib ditampilkan',
@@ -105,12 +106,12 @@ CREATE TABLE IF NOT EXISTS jadwal (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO jadwal (program, jenjang, waktu, penyelenggara, status) VALUES
-('Basic Training Angkatan I', 'LK I', 'November 2026', 'Komisariat', 'rencana'),
-('Sekolah Instruktur (SUPTT)', 'Non-Formal', 'Oktober 2026', 'BPL Cabang', 'rencana'),
-('Monitoring pasca Basic Training', 'Follow up', 'Berjalan', 'BPL Cabang', 'jalan'),
-('Intermediate Training Reguler', 'LK II', 'Menunggu kuota Cabang/Badko', 'HMI Cabang', 'tunggu'),
-('Rapat koordinasi instruktur', 'Internal', 'Setiap bulan', 'BPL Cabang', 'jalan');
+INSERT INTO jadwal (program, kategori, jenjang, waktu, penyelenggara, status) VALUES
+('Basic Training Angkatan I', 'bpl', 'LK I', 'November 2026', 'Komisariat', 'rencana'),
+('Sekolah Instruktur (SUPTT)', 'bpl', 'Non-Formal', 'Oktober 2026', 'BPL Cabang', 'rencana'),
+('Monitoring pasca Basic Training', 'pa', 'Follow up', 'Berjalan', 'BPL Cabang', 'jalan'),
+('Intermediate Training Reguler', 'bpl', 'LK II', 'Menunggu kuota Cabang/Badko', 'HMI Cabang', 'tunggu'),
+('Rapat koordinasi instruktur', 'bpl', 'Internal', 'Setiap bulan', 'BPL Cabang', 'jalan');
 
 -- ---------- 7. KEGIATAN ----------
 CREATE TABLE IF NOT EXISTS kegiatan (
