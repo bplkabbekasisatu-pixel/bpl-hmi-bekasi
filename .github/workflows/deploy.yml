@@ -1,0 +1,33 @@
+name: Deploy ke cPanel
+
+# Jalan otomatis setiap kali ada push ke branch main.
+# Bisa juga dipicu manual lewat tab "Actions" di GitHub (tombol "Run workflow").
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  ftp-deploy:
+    name: Upload lewat FTP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode terbaru
+        uses: actions/checkout@v6
+
+      - name: Sinkronkan ke hosting
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/api/config.php
+            **/api/config.example.php
+            **/database/**
+            **/README.md
+            **/uploads/**

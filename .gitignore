@@ -1,0 +1,12 @@
+# Kredensial database asli — JANGAN pernah diunggah ke GitHub.
+# Isi ulang manual di server dari salinan api/config.example.php.
+api/config.php
+
+# Folder foto hasil unggahan pengurus — ini isi runtime server,
+# bukan bagian dari kode sumber, jadi tidak perlu ikut di-deploy ulang.
+uploads/*
+!uploads/.gitkeep
+
+# File sistem operasi
+.DS_Store
+Thumbs.db
