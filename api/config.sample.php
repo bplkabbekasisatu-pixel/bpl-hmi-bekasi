@@ -10,11 +10,10 @@
  * akun hosting Anda, contoh: "namauser_bplhmi".
  * ============================================================
  */
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'GANTI_HOST_DATABASE');
 define('DB_NAME', 'GANTI_NAMA_DATABASE');
 define('DB_USER', 'GANTI_USERNAME_DATABASE');
 define('DB_PASS', 'GANTI_PASSWORD_DATABASE');
-
 /**
  * Folder tempat menyimpan foto yang diunggah pengurus (logo,
  * foto pengurus/instruktur, foto sampul kegiatan/berita).
