@@ -4,10 +4,10 @@
  * KONFIGURASI DATABASE
  * ============================================================
  * Ganti KEEMPAT nilai di bawah ini sesuai database MySQL yang
- * Anda buat di cPanel/VistaPanel (menu "MySQL Databases").
+ * Anda buat di dashboard 000webhost (menu "Database").
  *
- * Nama database & username di cPanel biasanya berawalan nama
- * akun hosting Anda, contoh: "namauser_bplhmi".
+ * Nama database & username di 000webhost biasanya berawalan id
+ * akun hosting Anda, contoh: "id12345678_bplhmi".
  *
  * File ini hanya CONTOH (aman untuk di-commit ke git). Salin jadi
  * "config.php" lalu isi nilai sungguhannya di sana — "config.php"
