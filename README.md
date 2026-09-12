@@ -99,6 +99,22 @@ datanya langsung tersimpan di tabel `administrasi`. Pengurus yang login akan mel
 daftarnya di bagian bawah halaman Administrasi ("Surat Masuk"), bisa mengubah status
 (Diajukan/Diproses/Selesai) dan menghapusnya.
 
+## Migrasi: memisahkan Program Kerja BPL & Program Kerja Bidang PA
+
+Sejak pembaruan ini, Program Kerja BPL dan Program Kerja Bidang PA adalah dua
+daftar yang berbeda (kolom `kategori` pada tabel `jadwal`) — masing-masing
+punya tombol tambah/ubah/hapus sendiri di mode Login Pengurus. Sebelumnya
+keduanya berbagi data yang sama.
+
+- **Situs baru** (baru mengimpor `database/schema.sql`): tidak perlu langkah
+  tambahan, kolom `kategori` sudah otomatis ada.
+- **Situs yang sudah live** sebelum pembaruan ini: buka phpMyAdmin → tab
+  **SQL** → tempel isi `database/migration_kategori_jadwal.sql` → **Go**.
+  Semua data jadwal lama otomatis masuk kategori "Program Kerja BPL"; buka
+  bagian "Program Kerja BPL" di situs (mode Login Pengurus), lalu pindahkan
+  baris yang sebenarnya milik Bidang PA lewat tombol ubah (✎) → pilih
+  "Bidang" → "Program Kerja Bidang PA".
+
 ## Backup
 
 Sesekali unduh backup database lewat phpMyAdmin (**Export** → **Quick** → **Go**) dan

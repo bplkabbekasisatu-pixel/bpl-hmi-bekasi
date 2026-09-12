@@ -319,24 +319,31 @@ function handle_post_table(PDO $pdo, string $table, string $method, ?int $id) {
     json_response(['error' => 'Permintaan tidak valid.'], 400);
 }
 
-/** Jadwal: dibaca terurut dari tanggal_urut terdekat (kosong = paling bawah). */
+/** Jadwal: Program Kerja BPL & Program Kerja Bidang PA, dibedakan lewat kolom kategori;
+ *  dibaca terurut dari tanggal_urut terdekat (kosong = paling bawah). */
 function handle_jadwal(PDO $pdo, string $method, ?int $id) {
     $statuses = ['rencana', 'jalan', 'terlaksana', 'tunggu'];
+    $kategoris = ['bpl', 'pa'];
     if ($method === 'GET') {
-        $rows = $pdo->query('
-            SELECT * FROM jadwal
-            ORDER BY (tanggal_urut IS NULL) ASC, tanggal_urut ASC, id ASC
-        ')->fetchAll();
-        json_response($rows);
+        $kategori = $_GET['kategori'] ?? null;
+        if ($kategori !== null && !in_array($kategori, $kategoris, true)) {
+            json_response(['error' => 'Kategori tidak valid.'], 400);
+        }
+        $sql = 'SELECT * FROM jadwal' . ($kategori ? ' WHERE kategori = ?' : '') . '
+            ORDER BY (tanggal_urut IS NULL) ASC, tanggal_urut ASC, id ASC';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($kategori ? [$kategori] : []);
+        json_response($stmt->fetchAll());
     }
     if ($method === 'POST') {
         require_login();
         $data = body_json();
         require_fields($data, ['program']);
         $status = in_array($data['status'] ?? '', $statuses, true) ? $data['status'] : 'rencana';
-        $stmt = $pdo->prepare('INSERT INTO jadwal (program, jenjang, waktu, tanggal_urut, penyelenggara, status) VALUES (?,?,?,?,?,?)');
+        $kategori = in_array($data['kategori'] ?? '', $kategoris, true) ? $data['kategori'] : 'bpl';
+        $stmt = $pdo->prepare('INSERT INTO jadwal (program, kategori, jenjang, waktu, tanggal_urut, penyelenggara, status) VALUES (?,?,?,?,?,?,?)');
         $stmt->execute([
-            $data['program'], $data['jenjang'] ?? '', $data['waktu'] ?? '',
+            $data['program'], $kategori, $data['jenjang'] ?? '', $data['waktu'] ?? '',
             !empty($data['tanggal_urut']) ? $data['tanggal_urut'] : null,
             $data['penyelenggara'] ?? '', $status,
         ]);
@@ -348,9 +355,10 @@ function handle_jadwal(PDO $pdo, string $method, ?int $id) {
         $data = body_json();
         require_fields($data, ['program']);
         $status = in_array($data['status'] ?? '', $statuses, true) ? $data['status'] : 'rencana';
-        $stmt = $pdo->prepare('UPDATE jadwal SET program=?, jenjang=?, waktu=?, tanggal_urut=?, penyelenggara=?, status=? WHERE id=?');
+        $kategori = in_array($data['kategori'] ?? '', $kategoris, true) ? $data['kategori'] : 'bpl';
+        $stmt = $pdo->prepare('UPDATE jadwal SET program=?, kategori=?, jenjang=?, waktu=?, tanggal_urut=?, penyelenggara=?, status=? WHERE id=?');
         $stmt->execute([
-            $data['program'], $data['jenjang'] ?? '', $data['waktu'] ?? '',
+            $data['program'], $kategori, $data['jenjang'] ?? '', $data['waktu'] ?? '',
             !empty($data['tanggal_urut']) ? $data['tanggal_urut'] : null,
             $data['penyelenggara'] ?? '', $status, $id,
         ]);
