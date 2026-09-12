@@ -1,4 +1,4 @@
-name: Deploy ke IDwebhost
+name: Deploy ke ProFreeHost
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout kode
         uses: actions/checkout@v4
 
-      - name: Upload ke IDwebhost
+      - name: Upload ke ProFreeHost
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -28,4 +28,4 @@ jobs:
             **/.github/**
             database/**
             README.md
-            DEPLOY-GITHUB-IDWEBHOST.md
+            DEPLOY-GITHUB-PROFREEHOST.md

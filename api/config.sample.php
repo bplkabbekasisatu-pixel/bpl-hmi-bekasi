@@ -4,10 +4,10 @@
  * KONFIGURASI DATABASE
  * ============================================================
  * Ganti KEEMPAT nilai di bawah ini sesuai database MySQL yang
- * Anda buat di cPanel IDwebhost (menu "MySQL® Databases").
+ * Anda buat di Control Panel (VistaPanel) ProFreeHost (menu "MySQL Databases").
  *
- * Nama database & username di cPanel biasanya berawalan nama
- * akun hosting Anda, contoh: "namauser_bplhmi".
+ * Nama database & username biasanya berawalan kode akun hosting
+ * Anda, contoh: "epiz_xxxxxxxx_bplhmi".
  *
  * File ini hanya CONTOH (aman untuk di-commit ke git). Salin jadi
  * "config.php" lalu isi nilai sungguhannya di sana — "config.php"
