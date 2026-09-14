@@ -1,4 +1,4 @@
-name: Deploy ke ProFreeHost
+name: Deploy ke InfinityFree
 
 on:
   push:
@@ -13,13 +13,15 @@ jobs:
       - name: Checkout kode
         uses: actions/checkout@v4
 
-      - name: Upload ke ProFreeHost
+      - name: Upload ke InfinityFree
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          # InfinityFree mewajibkan FTP over TLS (FTPS), bukan FTP polos.
+          protocol: ftps
           # api/config.php & uploads/ tidak pernah ada di repo (lihat .gitignore),
           # jadi tidak akan pernah tertimpa oleh deploy ini.
           exclude: |
@@ -28,4 +30,4 @@ jobs:
             **/.github/**
             database/**
             README.md
-            DEPLOY-GITHUB-PROFREEHOST.md
+            DEPLOY-GITHUB-INFINITYFREE.md

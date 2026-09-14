@@ -2,9 +2,9 @@
 
 Dokumen ini menjelaskan langkah yang harus diikuti setiap kali ada perubahan
 kode di proyek ini (`index.html`, folder `api/`, dll). Deploy ke situs live
-(**bplkabbekasi.unaux.com**) sudah **otomatis** lewat GitHub Actions — jadi
-alur di bawah ini fokus supaya perubahan aman sebelum dan sesudah otomatis
-ter-deploy.
+(hosting InfinityFree — lihat `DEPLOY-GITHUB-INFINITYFREE.md` untuk domain
+yang dipakai) sudah **otomatis** lewat GitHub Actions — jadi alur di bawah
+ini fokus supaya perubahan aman sebelum dan sesudah otomatis ter-deploy.
 
 ## Ringkasan alur
 
@@ -30,7 +30,7 @@ Review (diri sendiri / pengurus lain)
 Merge PR ke branch main
       │
       ▼
-GitHub Actions "Deploy ke ProFreeHost" otomatis jalan (± 1–2 menit)
+GitHub Actions "Deploy ke InfinityFree" otomatis jalan (± 1–2 menit)
       │
       ▼
 Cek tab Actions: pastikan centang hijau ✅
@@ -55,7 +55,7 @@ perubahan.
   kalau PHP tersedia di lokal).
 - Jangan sentuh `api/config.php` di repo — file ini sengaja tidak ikut di-track
   git (lihat `.gitignore`) supaya kredensial database tidak bocor. Perubahan
-  kredensial dilakukan manual langsung di server (lihat `DEPLOY-GITHUB-PROFREEHOST.md`).
+  kredensial dilakukan manual langsung di server (lihat `DEPLOY-GITHUB-INFINITYFREE.md`).
 
 ### 3. Commit
 Gunakan pesan commit yang jelas tentang **kenapa** perubahan dilakukan, bukan
@@ -70,18 +70,20 @@ sekadar mengulang isi diff.
 ### 5. Merge ke main → deploy otomatis
 Begitu perubahan masuk ke branch `main` (baik lewat push langsung maupun
 merge PR), workflow `.github/workflows/deploy.yml` otomatis mengirim file ke
-ProFreeHost lewat FTP. Prosesnya bisa dipantau di tab **Actions** repo GitHub.
+InfinityFree lewat FTPS. Prosesnya bisa dipantau di tab **Actions** repo GitHub.
 
 ### 6. Verifikasi
 - Pastikan run di tab Actions selesai dengan centang hijau ✅.
-- Buka **https://bplkabbekasi.unaux.com** dan cek perubahan sudah tampil.
+- Buka domain situs (lihat `DEPLOY-GITHUB-INFINITYFREE.md`) dan cek perubahan
+  sudah tampil — kalau belum, coba hard refresh (`Ctrl+Shift+R`) dulu sebelum
+  curiga ada yang salah.
 - Coba alur yang relevan dengan perubahan (mis. kalau ubah form, coba isi
   dan kirim form-nya).
 
 ### 7. Yang TIDAK ikut ter-deploy otomatis
 `uploads/` dan `api/config.php` di server **tidak pernah ditimpa** oleh
 proses deploy ini (lihat pengecualian di `deploy.yml`). Perubahan pada
-keduanya harus dilakukan manual lewat File Manager ProFreeHost.
+keduanya harus dilakukan manual lewat File Manager InfinityFree.
 
 ## Kalau ada masalah setelah deploy
 
