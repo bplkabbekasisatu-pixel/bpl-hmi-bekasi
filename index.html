@@ -626,11 +626,7 @@
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
           <button class="btn btn-primary" id="ad-send" type="button">Kirim Pengajuan</button>
         </div>
-        <p style="font-size:.78rem;color:var(--muted);margin-top:14px;">Pengajuan tersimpan langsung ke server dan bisa ditinjau oleh pengurus. Ingin memastikan cepat direspons? Kirim juga salinannya lewat:</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
-          <button class="btn btn-ghost btn-sm" id="ad-send-wa" type="button">Kirim salinan via WhatsApp</button>
-          <button class="btn btn-ghost btn-sm" id="ad-send-email" type="button">Kirim salinan via Email</button>
-        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:14px;">Pengajuan tersimpan langsung ke server dan bisa ditinjau oleh pengurus.</p>
       </div>
     </div>
     <div class="wrap" id="administrasi-inbox-wrap" style="margin-top:48px;"></div>
@@ -1772,9 +1768,6 @@
 
   /* ---------- Administrasi: pengajuan surat (publik, tersimpan sungguhan) + inbox pengurus ---------- */
   (function initAdministrasi(){
-    var waBtn = document.getElementById('ad-send-wa');
-    var emailBtn = document.getElementById('ad-send-email');
-    if(!waBtn || !emailBtn) return;
     function getFormData(){
       return {
         komisariat: document.getElementById('ad-komisariat').value.trim(),
@@ -1809,24 +1802,6 @@
         });
       });
     }
-    function tujuanLabel(v){ return v === 'PA' ? 'Bidang Pembinaan Anggota (PA)' : 'Badan Pengelola Latihan (BPL)'; }
-    function buildMessage(data){
-      var lines = ['Pengajuan Surat — ' + tujuanLabel(data.tujuan), 'Komisariat: ' + data.komisariat, 'Pengaju: ' + data.pengaju, 'Perihal: ' + data.perihal];
-      if(data.isi) lines.push('Keterangan: ' + data.isi);
-      if(data.kontak_pengaju) lines.push('Kontak balik: ' + data.kontak_pengaju);
-      return lines.join('\n');
-    }
-    waBtn.addEventListener('click', function(){
-      var data = getFormData();
-      if(!validate(data)) return;
-      var digits = ((contentCache.kontak_nohp) || '').replace(/[^0-9]/g,'').replace(/^0/,'62');
-      window.open('https://wa.me/'+digits+'?text='+encodeURIComponent(buildMessage(data)), '_blank');
-    });
-    emailBtn.addEventListener('click', function(){
-      var data = getFormData();
-      if(!validate(data)) return;
-      window.location.href = 'mailto:'+(contentCache.kontak_email||'')+'?subject='+encodeURIComponent('Pengajuan Surat dari Komisariat')+'&body='+encodeURIComponent(buildMessage(data));
-    });
   })();
 
   var ADMIN_STATUS_LABEL = {diajukan:'Diajukan', diproses:'Diproses', selesai:'Selesai'};
