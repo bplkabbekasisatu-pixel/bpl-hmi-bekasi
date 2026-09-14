@@ -10,6 +10,10 @@ bukan lagi data yang ditempel di dalam file HTML. Artinya:
   ditinjau pengurus, bukan cuma terbuka lewat WhatsApp/Email
 - Berjalan di hosting **cPanel dengan PHP + MySQL** — jenis hosting paling umum
 
+> Deploy ke situs live sudah otomatis lewat GitHub Actions setiap push ke
+> `main`. Lihat `DEPLOY-GITHUB-PROFREEHOST.md` untuk setup awal, dan
+> `ALUR-KERJA.md` untuk langkah yang harus diikuti setiap ada perubahan kode.
+
 ## Isi paket ini
 
 ```
