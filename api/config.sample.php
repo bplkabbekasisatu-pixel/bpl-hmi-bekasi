@@ -4,10 +4,12 @@
  * KONFIGURASI DATABASE
  * ============================================================
  * Ganti KEEMPAT nilai di bawah ini sesuai database MySQL yang
- * Anda buat di Control Panel (VistaPanel) ProFreeHost (menu "MySQL Databases").
+ * Anda buat di Control Panel InfinityFree (menu "MySQL Databases").
  *
  * Nama database & username biasanya berawalan kode akun hosting
- * Anda, contoh: "epiz_xxxxxxxx_bplhmi".
+ * Anda, contoh: "if0_xxxxxxxx_bplhmi". DB_HOST di InfinityFree BUKAN
+ * "localhost" — isi dengan hostname MySQL yang tertulis di halaman
+ * "MySQL Databases", contoh: "sqlXXX.infinityfree.com".
  *
  * File ini hanya CONTOH (aman untuk di-commit ke git). Salin jadi
  * "config.php" lalu isi nilai sungguhannya di sana — "config.php"
