@@ -1480,6 +1480,8 @@
 
   /* ---------- Database Kader ---------- */
   var kaderArr = [];
+  var KADERDB_PAGE_SIZE = 10;
+  var kaderDbPage = 0;
   function renderKaderDb(){
     var wrap = document.getElementById('kaderdb-wrap');
     if(!wrap) return;
@@ -1487,11 +1489,23 @@
     apiGet('kader').then(function(res){
       if(res.status === 401){ wrap.innerHTML = lockedNotice('db'); bindGotoLogin('db'); return; }
       kaderArr = res.data || [];
-      var fmtTT = function(tahun, tempat){ return [tahun, tempat].filter(Boolean).join(' · '); };
-      var fmtCell = function(val, cls){ return '<td class="'+cls+'" title="'+escapeHtml(val||'')+'">'+escapeHtml(val || '—')+'</td>'; };
-      var rowsHtml = kaderArr.length ? kaderArr.map(function(r,i){
+      kaderDbPage = 0;
+      renderKaderDbTable();
+    });
+  }
+  function renderKaderDbTable(){
+    var wrap = document.getElementById('kaderdb-wrap');
+    if(!wrap) return;
+    var totalPages = Math.max(1, Math.ceil(kaderArr.length / KADERDB_PAGE_SIZE));
+    if(kaderDbPage >= totalPages) kaderDbPage = totalPages - 1;
+    if(kaderDbPage < 0) kaderDbPage = 0;
+    var pageStart = kaderDbPage * KADERDB_PAGE_SIZE;
+    var pageArr = kaderArr.slice(pageStart, pageStart + KADERDB_PAGE_SIZE);
+    var fmtTT = function(tahun, tempat){ return [tahun, tempat].filter(Boolean).join(' · '); };
+    var fmtCell = function(val, cls){ return '<td class="'+cls+'" title="'+escapeHtml(val||'')+'">'+escapeHtml(val || '—')+'</td>'; };
+    var rowsHtml = pageArr.length ? pageArr.map(function(r,i){
         return '<tr>' +
-          '<td>'+(i+1)+'</td>' +
+          '<td>'+(pageStart+i+1)+'</td>' +
           '<td>'+escapeHtml(r.nik)+'</td>' +
           '<td>'+escapeHtml(r.nama)+'</td>' +
           '<td class="col-narrow-wide" title="'+escapeHtml(r.alamat||'')+'">'+escapeHtml(r.alamat||'—')+'</td>' +
@@ -1504,7 +1518,7 @@
           fmtCell(fmtTT(r.sc_tahun, r.sc_tempat), 'col-narrow-wide') +
           fmtCell(fmtTT(r.lkk_tahun, r.lkk_tempat), 'col-narrow-wide') +
           fmtCell([r.lpp_tahun, r.lpp_lembaga, r.lpp_tempat].filter(Boolean).join(' · '), 'col-narrow-wide') +
-          '<td style="white-space:nowrap;"><button class="edit-fab sm" data-edit-kaderdb="'+i+'">✎</button> <button class="edit-fab sm" data-del-kaderdb="'+i+'">🗑</button></td>' +
+          '<td style="white-space:nowrap;"><button class="edit-fab sm" data-edit-kaderdb="'+(pageStart+i)+'">✎</button> <button class="edit-fab sm" data-del-kaderdb="'+(pageStart+i)+'">🗑</button></td>' +
         '</tr>';
       }).join('') : '<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:28px;">Belum ada data kader.</td></tr>';
 
@@ -1517,6 +1531,11 @@
           '<button class="btn btn-ghost btn-sm" id="btn-import-kaderdb" type="button">⬆ Impor Excel</button>' +
           '<button class="btn btn-ghost btn-sm" id="btn-template-kaderdb" type="button">Unduh template Excel</button>' +
           '<input type="file" id="kaderdb-file-input" accept=".xlsx,.xls" style="display:none;">' +
+        '</div>' +
+        '<div class="table-foot" style="justify-content:space-between;align-items:center;">' +
+          '<button class="btn btn-ghost btn-sm" id="btn-kaderdb-prev" type="button" '+(kaderDbPage<=0?'disabled':'')+'>‹ Sebelumnya</button>' +
+          '<span style="font-size:.82rem;color:var(--muted);">Halaman '+(kaderDbPage+1)+' dari '+totalPages+' ('+kaderArr.length+' data)</span>' +
+          '<button class="btn btn-ghost btn-sm" id="btn-kaderdb-next" type="button" '+(kaderDbPage>=totalPages-1?'disabled':'')+'>Selanjutnya ›</button>' +
         '</div>' +
       '</div>';
 
@@ -1544,7 +1563,10 @@
         e.target.value = '';
         if(f) handleKaderExcelUpload(f);
       });
-    });
+      var prevBtn = document.getElementById('btn-kaderdb-prev');
+      var nextBtn = document.getElementById('btn-kaderdb-next');
+      if(prevBtn) prevBtn.addEventListener('click', function(){ kaderDbPage--; renderKaderDbTable(); });
+      if(nextBtn) nextBtn.addEventListener('click', function(){ kaderDbPage++; renderKaderDbTable(); });
   }
   var TRAINING_LEVELS = [
     {key:'lk1', label:'LK I'}, {key:'lk2', label:'LK II'}, {key:'lk3', label:'LK III'}, {key:'sc', label:'SC'}, {key:'lkk', label:'LKK'}
